@@ -23,8 +23,8 @@ const char compile_date[] = __DATE__ " " __TIME__;
 
 // Network settings vvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-const char *ssid = "RGB Controller";
-const char *password = "rctf1234";
+const char *ssid = "colorshadow";
+const char *password = "colorshadow";
 
 IPAddress local_IP(192, 168, 1, 1);
 IPAddress gateway(192, 168, 1, 1);
