@@ -137,9 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Unlock button handler
   unlockButton.addEventListener('click', function () {
-    if (confirm('WARNING: Unlocking full power mode will allow the LEDs to operate at higher power levels. ' +
-      'This can cause excessive heat and potentially damage the LEDs if run for extended periods. ' +
-      'Are you sure you want to continue?')) {
+    if (confirm('WARNING: Unlocking full power may cause LEDs and heatsinks to reach high temperatures, posing a burn risk. Handle with caution and keep LEDs at least 3 cm away from skin and flammable objects. ' +
+      'Are you sure you want to continue?\n\n' + 'NOTE: LEDs automatically switch off when heatsinks reach 63C. Ensure adequate airflow during use at high power levels to avoid automatic switching')) {
       fetch('/unlock', {
         method: 'POST',
         headers: {
@@ -163,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Reset button handler
   resetButton.addEventListener('click', function () {
-    if (confirm('This will return the device to safe mode (10% power limit). Continue?')) {
+    if (confirm('This will return the device to safe mode (reduced power level). Continue?')) {
       fetch('/reset', {
         method: 'POST',
         headers: {

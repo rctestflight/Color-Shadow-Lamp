@@ -20,7 +20,7 @@ private:
     const int updateThreshold = 4;
     bool shouldUpdate(int current, int new_value);
 
-    static constexpr float LOCKED_POWER_LIMIT = 0.3f;   // 20% power
+    static constexpr float LOCKED_POWER_LIMIT = 0.2f;   // 20% power
     static constexpr float UNLOCKED_POWER_LIMIT = 0.6f; // 60% power
     float currentPowerLimit;
     Preferences preferences;
