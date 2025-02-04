@@ -10,7 +10,7 @@ private:
     AsyncWebServer server;
     LEDController &ledController;
     const char *ssid = "Color_Shadow";
-    const char *password = "4";
+    const char *password = "password";
     unsigned long lastUpdate = 0;
     const unsigned long MIN_UPDATE_INTERVAL = 5;
 
