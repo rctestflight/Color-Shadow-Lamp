@@ -75,7 +75,7 @@ void LEDController::setPWMDirectly(int red, int green, int blue) {
     // Constrain values first
     red = constrain(red, 0, 2047);
     green = constrain(green, 0, 2047);
-    blue = constrain(blue, 0, 2000);
+    blue = constrain(blue, 0, 2047);
 
     bool updateRed = shouldUpdate(currentRed, red);
     bool updateGreen = shouldUpdate(currentGreen, green);
