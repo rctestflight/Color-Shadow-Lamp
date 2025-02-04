@@ -1,27 +1,65 @@
-// state.h
 #ifndef STATE_H
 #define STATE_H
 
-#include <stdint.h>
+#include <Arduino.h>
+#include "LEDController.h"
 
-// Structure to hold the state of the LEDs
-struct LEDState {
-    uint16_t red;
-    uint16_t green;
-    uint16_t blue;
+enum class OperationMode {
+    RGB,
+    LTT,
+    WIFI,
+    OFF,
 };
 
-// Structure to hold the state of the potentiometers
-struct PotentiometerState {
-    uint16_t redPotValue;
-    uint16_t greenPotValue;
-    uint16_t bluePotValue;
+class StateHandler {
+private:
+    static constexpr int BUTTON_PIN = 9;
+    static constexpr int DEBOUNCE_TIME = 15;
+    
+    OperationMode currentMode;
+    unsigned long lastButtonPress;
+    bool buttonWasPressed;
+    LEDController &ledController;
 
-    // Add previous values for filtering
-    uint16_t redPotValueFiltered;
-    uint16_t greenPotValueFiltered;
-    uint16_t bluePotValueFiltered;
+public:
+    StateHandler(LEDController &controller)
+        : currentMode(OperationMode::RGB), lastButtonPress(0), buttonWasPressed(false), ledController(controller) {}
+
+    void begin() {
+        currentMode = OperationMode::RGB;
+        pinMode(BUTTON_PIN, INPUT);
+    }
+
+    OperationMode getCurrentMode() const {
+        return currentMode;
+    }
+
+    void update() {
+        bool buttonIsPressed = (digitalRead(BUTTON_PIN) == 0);
+        
+        if (buttonIsPressed && !buttonWasPressed) {
+            unsigned long now = millis();
+            if (now - lastButtonPress >= DEBOUNCE_TIME) {
+                lastButtonPress = now;
+                
+                switch (currentMode) {
+                    case OperationMode::OFF:
+                        currentMode = OperationMode::RGB;
+                        break;
+                    case OperationMode::RGB:
+                        currentMode = OperationMode::LTT;
+                        break;
+                    case OperationMode::LTT:
+                        currentMode = OperationMode::WIFI;
+                        break;
+                    case OperationMode::WIFI:
+                        currentMode = OperationMode::OFF;
+                        break;
+                }
+            }
+        }
+        buttonWasPressed = buttonIsPressed;
+    }
 };
 
-
-#endif // STATE_H
+#endif

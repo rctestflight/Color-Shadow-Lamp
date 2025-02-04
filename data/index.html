@@ -10,7 +10,7 @@
     html, body {background: #202652;}
     h3 {color: aliceblue; text-align: center;}
 
-    .ColorPicker{
+    .ColorPicker {
         display: flex;
         align-items: center;
         align-content: center;
@@ -18,13 +18,72 @@
         margin-top: 2%;
         text-align: center;
     }
-    
 
+    .unlock-section {
+        margin-top: 20px;
+        text-align: center;
+        color: white;
+    }
 
-</style>
+    .unlock-button {
+        background-color: #ff4444;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .unlock-button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    .reset-button {
+        background-color: #ffa500;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+
+    .button-group {
+        margin-top: 10px;
+    }
+
+    .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    .status-locked {
+        background-color: #ff4444;
+    }
+
+    .status-unlocked {
+        background-color: #44ff44;
+    }
+  </style>
 </head>
 <body>
   <h3>StratusLEDs Controller</h3>
   <div class="ColorPicker" id="color-picker"></div>
+  <div class="unlock-section">
+    <div>
+      <span class="status-indicator" id="lockStatus"></span>
+      <span id="lockStatusText">Checking status...</span>
+    </div>
+    <div class="button-group">
+      <button id="unlockButton" class="unlock-button">Unlock Full Power</button>
+      <button id="resetButton" class="reset-button" style="display: none;">Reset to Safe Mode</button>
+    </div>
+  </div>
 </body>
 </html>
