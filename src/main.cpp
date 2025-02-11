@@ -73,11 +73,13 @@ void loop()
     if (isInWiFiMode && !wasInWiFiMode)
     {
       wifiManager.begin();
+      ledController.checkAndUpdatePowerLimit();
     }
     else if (!isInWiFiMode && wasInWiFiMode)
     {
       wifiManager.stop();
       ledController.setPWMDirectly(0, 0, 0);
+      ledController.checkAndUpdatePowerLimit();
     }
     wasInWiFiMode = isInWiFiMode;
 

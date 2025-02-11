@@ -4,6 +4,10 @@
 #include <Arduino.h>
 #include <Preferences.h>
 
+static constexpr float RED_TRIM = 1.0f;   // Adjust these between 0.0-1.0
+static constexpr float GREEN_TRIM = 1.0f;  // to trim individual colors
+static constexpr float BLUE_TRIM = 1.0f;
+
 class LEDController {
 private:
     const int redPin;
@@ -28,6 +32,7 @@ private:
     void applyPowerLimit(int& red, int& green, int& blue);
     void loadPowerLimit();
     void writePWM(int channel, int value);
+    void updatePowerLimitFromPreferences();
 
 public:
     LEDController(
@@ -45,6 +50,7 @@ public:
     bool isUnlocked() const { return currentPowerLimit > LOCKED_POWER_LIMIT; }
     void unlock();
     void resetToSafeMode();
+    void checkAndUpdatePowerLimit();
 };
 
 #endif

@@ -34,11 +34,20 @@ void LEDController::begin() {
     loadPowerLimit();
 }
 
-void LEDController::loadPowerLimit() {
+void LEDController::updatePowerLimitFromPreferences() {
     preferences.begin("led", false);
     bool unlocked = preferences.getBool("unlocked", false);
     currentPowerLimit = unlocked ? UNLOCKED_POWER_LIMIT : LOCKED_POWER_LIMIT;
     preferences.end();
+    Serial.printf("Power limit updated to: %f\n", currentPowerLimit);
+}
+
+void LEDController::loadPowerLimit() {
+    updatePowerLimitFromPreferences();
+}
+
+void LEDController::checkAndUpdatePowerLimit() {
+    updatePowerLimitFromPreferences();
 }
 
 void LEDController::unlock() {
@@ -71,7 +80,6 @@ void LEDController::writePWM(int channel, int value) {
 }
 
 void LEDController::setPWMDirectly(int red, int green, int blue) {
-
     // Constrain values first
     red = constrain(red, 0, 2047);
     green = constrain(green, 0, 2047);
@@ -81,8 +89,12 @@ void LEDController::setPWMDirectly(int red, int green, int blue) {
     bool updateGreen = shouldUpdate(currentGreen, green);
     bool updateBlue = shouldUpdate(currentBlue, blue);
 
-    Serial.printf("DEBUG: Writing to channels - Red(ch%d): %d, Green(ch%d): %d, Blue(ch%d): %d\n",
-    redChannel, red, greenChannel, green, blueChannel, blue);
+    #ifdef DEBUG_LED
+    if (Serial) {
+        Serial.printf("DEBUG: Writing to channels - Red(ch%d): %d, Green(ch%d): %d, Blue(ch%d): %d\n",
+        redChannel, red, greenChannel, green, blueChannel, blue);
+    }
+    #endif
 
     if (updateRed || updateGreen || updateBlue) {
         if (updateRed) {
