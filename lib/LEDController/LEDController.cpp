@@ -85,6 +85,11 @@ void LEDController::setPWMDirectly(int red, int green, int blue) {
     green = constrain(green, 0, 2047);
     blue = constrain(blue, 0, 2047);
 
+    // Apply RGB trim values
+    red = static_cast<int>(red * RED_TRIM);
+    green = static_cast<int>(green * GREEN_TRIM);
+    blue = static_cast<int>(blue * BLUE_TRIM);
+
     bool updateRed = shouldUpdate(currentRed, red);
     bool updateGreen = shouldUpdate(currentGreen, green);
     bool updateBlue = shouldUpdate(currentBlue, blue);
