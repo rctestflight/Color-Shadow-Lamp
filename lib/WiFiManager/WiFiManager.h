@@ -3,7 +3,6 @@
 #include <AsyncTCP.h>
 #include <SPIFFS.h>
 #include "LEDController.h"
-#include <ESPmDNS.h>
 
 class WiFiManager
 {
@@ -121,12 +120,6 @@ public:
         {
             Serial.println("AP Failed - Rebooting");
             ESP.restart();
-        }
-
-        // mDNS setup after AP is confirmed working
-        if (MDNS.begin("colorshadow")) {
-            Serial.println("MDNS responder started");
-            MDNS.addService("http", "tcp", 80);
         }
 
         
