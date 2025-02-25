@@ -5,8 +5,8 @@ void LTTController::lttToRgb(int luminance, int temperature, int tintVal, int& r
     float t = temperature / 2047.0f;
     float tv = tintVal / 2047.0f;
     
-    float baseR = 1.0f - t * 0.9f;
-    float baseB = 0.1f + t * 0.9f;
+    float baseR = 1.0f - t * 0.8f;
+    float baseB = 0.2f + t * 0.8f;
     float baseG = 0.8f * (0.5f + tv * 0.5f);
     
     r = static_cast<int>(baseR * l * 2047);

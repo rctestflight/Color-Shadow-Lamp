@@ -118,5 +118,12 @@ void LEDController::setPWMDirectly(int red, int green, int blue) {
 }
 
 bool LEDController::shouldUpdate(int current, int new_value) {
-    return abs(current - new_value) > updateThreshold;
+    if(abs(current - new_value) > noiseThreshold){ //if the noise threshold is exceeded
+        lastChangeTime = millis(); //start a timer
+        updateThreshold = minThreshold; //make the pots sensative
+    } else if (millis() - lastChangeTime > idleTimeThreshold) { //if the timer is up
+            updateThreshold = noiseThreshold;
+        }
+    
+  return abs(current - new_value) > updateThreshold;
 }
