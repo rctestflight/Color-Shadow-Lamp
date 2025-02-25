@@ -14,7 +14,7 @@ enum class OperationMode {
 class StateHandler {
 private:
     static constexpr int BUTTON_PIN = 9;
-    static constexpr int DEBOUNCE_TIME = 15;
+    static constexpr int DEBOUNCE_TIME = 50;
     
     OperationMode currentMode;
     unsigned long lastButtonPress;

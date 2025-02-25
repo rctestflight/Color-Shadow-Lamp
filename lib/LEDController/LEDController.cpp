@@ -34,11 +34,20 @@ void LEDController::begin() {
     loadPowerLimit();
 }
 
-void LEDController::loadPowerLimit() {
+void LEDController::updatePowerLimitFromPreferences() {
     preferences.begin("led", false);
     bool unlocked = preferences.getBool("unlocked", false);
     currentPowerLimit = unlocked ? UNLOCKED_POWER_LIMIT : LOCKED_POWER_LIMIT;
     preferences.end();
+    Serial.printf("Power limit updated to: %f\n", currentPowerLimit);
+}
+
+void LEDController::loadPowerLimit() {
+    updatePowerLimitFromPreferences();
+}
+
+void LEDController::checkAndUpdatePowerLimit() {
+    updatePowerLimitFromPreferences();
 }
 
 void LEDController::unlock() {
@@ -71,18 +80,26 @@ void LEDController::writePWM(int channel, int value) {
 }
 
 void LEDController::setPWMDirectly(int red, int green, int blue) {
-
     // Constrain values first
     red = constrain(red, 0, 2047);
     green = constrain(green, 0, 2047);
     blue = constrain(blue, 0, 2047);
 
+    // Apply RGB trim values
+    red = static_cast<int>(red * RED_TRIM);
+    green = static_cast<int>(green * GREEN_TRIM);
+    blue = static_cast<int>(blue * BLUE_TRIM);
+
     bool updateRed = shouldUpdate(currentRed, red);
     bool updateGreen = shouldUpdate(currentGreen, green);
     bool updateBlue = shouldUpdate(currentBlue, blue);
 
-    Serial.printf("DEBUG: Writing to channels - Red(ch%d): %d, Green(ch%d): %d, Blue(ch%d): %d\n",
-    redChannel, red, greenChannel, green, blueChannel, blue);
+    #ifdef DEBUG_LED
+    if (Serial) {
+        Serial.printf("DEBUG: Writing to channels - Red(ch%d): %d, Green(ch%d): %d, Blue(ch%d): %d\n",
+        redChannel, red, greenChannel, green, blueChannel, blue);
+    }
+    #endif
 
     if (updateRed || updateGreen || updateBlue) {
         if (updateRed) {
@@ -101,5 +118,12 @@ void LEDController::setPWMDirectly(int red, int green, int blue) {
 }
 
 bool LEDController::shouldUpdate(int current, int new_value) {
-    return abs(current - new_value) > updateThreshold;
+    if(abs(current - new_value) > noiseThreshold){ //if the noise threshold is exceeded
+        lastChangeTime = millis(); //start a timer
+        updateThreshold = minThreshold; //make the pots sensative
+    } else if (millis() - lastChangeTime > idleTimeThreshold) { //if the timer is up
+            updateThreshold = noiseThreshold;
+        }
+    
+  return abs(current - new_value) > updateThreshold;
 }

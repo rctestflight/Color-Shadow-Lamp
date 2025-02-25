@@ -4,6 +4,10 @@
 #include <Arduino.h>
 #include <Preferences.h>
 
+static constexpr float RED_TRIM = 0.95f;   // Adjust these between 0.0-1.0
+static constexpr float GREEN_TRIM = 1.0f;  // to trim individual colors
+static constexpr float BLUE_TRIM = 0.40f; 
+
 class LEDController {
 private:
     const int redPin;
@@ -17,10 +21,10 @@ private:
     int currentRed = 0;
     int currentGreen = 0;
     int currentBlue = 0;
-    const int updateThreshold = 4;
-    bool shouldUpdate(int current, int new_value);
+    //int updateThreshold = 30;
+    //bool shouldUpdate(int current, int new_value);
 
-    static constexpr float LOCKED_POWER_LIMIT = 0.2f;   // 20% power
+    static constexpr float LOCKED_POWER_LIMIT = 0.3f;   // 30% power
     static constexpr float UNLOCKED_POWER_LIMIT = 0.6f; // 60% power
     float currentPowerLimit;
     Preferences preferences;
@@ -28,6 +32,15 @@ private:
     void applyPowerLimit(int& red, int& green, int& blue);
     void loadPowerLimit();
     void writePWM(int channel, int value);
+    void updatePowerLimitFromPreferences();
+
+
+    float updateThreshold = 5; // Initial threshold - no need to change this
+    float noiseThreshold = 20; // Max pot noise level should be below this
+    float minThreshold = 5;  // Minimum threshold for high precision
+    unsigned long lastChangeTime = 0;
+    const unsigned long idleTimeThreshold = 7000;
+
 
 public:
     LEDController(
@@ -45,6 +58,10 @@ public:
     bool isUnlocked() const { return currentPowerLimit > LOCKED_POWER_LIMIT; }
     void unlock();
     void resetToSafeMode();
+    void checkAndUpdatePowerLimit();
+
+    bool shouldUpdate(int current, int new_value);
+    void adjustThreshold(int current, int new_value);
 };
 
 #endif

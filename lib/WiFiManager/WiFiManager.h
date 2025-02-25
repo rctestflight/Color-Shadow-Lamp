@@ -3,6 +3,7 @@
 #include <AsyncTCP.h>
 #include <SPIFFS.h>
 #include "LEDController.h"
+#include <ESPmDNS.h>
 
 class WiFiManager
 {
@@ -48,6 +49,7 @@ private:
     {
         Serial.println("Unlock requested");
         ledController.unlock();
+        ledController.checkAndUpdatePowerLimit();
         Serial.println("Unlock complete");
         request->send(200, "text/plain", "OK");
     }
@@ -56,6 +58,7 @@ private:
     {
         Serial.println("Reset requested");
         ledController.resetToSafeMode();
+        ledController.checkAndUpdatePowerLimit();
         Serial.println("Reset complete");
         request->send(200, "text/plain", "OK");
     }
@@ -99,9 +102,8 @@ public:
         }
 
         // 1. Register WiFi event handler FIRST
-        WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
-            Serial.printf("[WiFi] Event: %d\n", event);
-        });
+        WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info)
+                     { Serial.printf("[WiFi] Event: %d\n", event); });
 
         // Disable WiFi power save for better responsiveness
         WiFi.setSleep(false);
@@ -121,6 +123,13 @@ public:
             ESP.restart();
         }
 
+        // mDNS setup after AP is confirmed working
+        if (MDNS.begin("colorshadow")) {
+            Serial.println("MDNS responder started");
+            MDNS.addService("http", "tcp", 80);
+        }
+
+        
         DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
         DefaultHeaders::Instance().addHeader("Access-Control-Allow-Methods", "GET, POST, PUT");
         DefaultHeaders::Instance().addHeader("Access-Control-Allow-Headers", "Content-Type");
